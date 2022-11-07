@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  app:
+    image: "diego/dpjava:v1.0-SNAPSHOT"
+    build:
+      context: Docker
+    container_name: app
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/market
+      - SPRING_DATASOURCE_USERNAME=dpuser
+      - SPRING_DATASOURCE_PASSWORD=dppass
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+      - SPRING_JPA_SHOW_SQL=true
+    ports:
+      - 90:8010
+  postgres:
+    image: "postgres:latest"
+    container_name: "postgres"
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    restart: always
+    environment:
+      POSTGRES_USER: dpuser
+      POSTGRES_PASSWORD: dppass
+      POSTGRES_DB: dpdb
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: "dpage/pgadmin4"
+    restart: always
+    container_name: "pgadmin"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@mycomp.com
+      PGADMIN_DEFAULT_PASSWORD: secret
+#      PGADMIN_CONFIG_SERVER_MODE: 'False'
+#    links:
+#      - postgres:postgres
+    ports:
+      - "5050:80"
+volumes:
+  pgdata:
